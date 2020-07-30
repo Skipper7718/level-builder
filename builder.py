@@ -1,16 +1,14 @@
   
 import sys
-# try:
-#     if sys.argv[1] > 6 and sys.argv[1] < 31 and sys.argv[2] > 6 and sys.argv[2] < 31:
-#         import pygame
-#     else:
-#         print("Use a range from 6 to 30 grid pieces")
-#         sys.exit()
-# except:
-#     print("ann error")
-#     sys.exit()
-import pygame
-
+try:
+    if int(sys.argv[1]) + int(sys.argv[2]) < 61 and int(sys.argv[1]) + int(sys.argv[2]) > 11:
+        import pygame
+    else:
+        print("Usage: builder.py <count of x cubes (6-30)> <count of y cubes (6-30)>")
+        sys.exit()
+except ValueError or IndexError:
+    print("Usage: builder.py <count of x cubes (6-30)> <count of y cubes (6-30)>")
+    sys.exit()
 
 ROWS = int(sys.argv[2])
 COLLUMS = int(sys.argv[1])
@@ -48,7 +46,7 @@ class Grid(pygame.sprite.Sprite):
 
 # <<<BUTTON CLASS>>> #
 class Button(pygame.sprite.Sprite):
-    def __init__(self,x,y,color):
+    def __init__(self,x,y,color,text):
         super().__init__()
         self.base = 40
         self.image = pygame.Surface((self.base,self.base))
@@ -97,7 +95,7 @@ for i in range(COLLUMS):
     gy = 0
     gx += RECTBASE
 
-buttons = [Button(10, ROWS * RECTBASE + 10,(255,0,0)),Button(50, ROWS * RECTBASE + 10,(255,255,0)),Button(90, ROWS * RECTBASE + 10,(0,255,0)),Button(130, ROWS * RECTBASE + 10,(0,255,255)),Button(10, ROWS * RECTBASE + 50,(0,0,255)),Button(50, ROWS * RECTBASE + 50,(255,0,255)),Button(90, ROWS * RECTBASE + 50,(0,0,0))]
+buttons = [Button(10, ROWS * RECTBASE + 10,(255,0,0),"RED"),Button(50, ROWS * RECTBASE + 10,(255,255,0),"YELLOW"),Button(90, ROWS * RECTBASE + 10,(0,255,0),"GREEN"),Button(130, ROWS * RECTBASE + 10,(0,255,255),"BLUE1"),Button(10, ROWS * RECTBASE + 50,(0,0,255),"BLUE"),Button(50, ROWS * RECTBASE + 50,(255,0,255),"PURPLE"),Button(90, ROWS * RECTBASE + 50,(0,0,0),"BLACK")]
 
 togglecolor = (0,0,0)
 while run:
