@@ -10,6 +10,7 @@ except ValueError or IndexError:
     print("Usage: builder.py <count of x cubes (6-30)> <count of y cubes (6-30)>")
     sys.exit()
 
+pygame.init()
 ROWS = int(sys.argv[2])
 COLLUMS = int(sys.argv[1])
 RECTBASE = 30
@@ -31,22 +32,25 @@ class Grid(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.toggled = False
+        self.value = "."
     def collision(self, mouse_x, mouse_y):
         if mouse_x > self.rect.x and mouse_x < self.rect.x+self.rect.width:
             if mouse_y < self.rect.y+self.rect.width and mouse_y > self.rect.y:
                 return True
-    def toggle(self, togglecolor):
+    def toggle(self, togglecolor, value):
         if self.toggled:
             self.color = (255,255,255)
             self.toggled = False
+            self.value = "."
         else:
             self.color = togglecolor
             self.toggled = True
+            self.value = value
 
 
 # <<<BUTTON CLASS>>> #
 class Button(pygame.sprite.Sprite):
-    def __init__(self,x,y,color,text):
+    def __init__(self,x,y,color,text,value,textcolor=(255,255,255)):
         super().__init__()
         self.base = 40
         self.image = pygame.Surface((self.base,self.base))
@@ -56,9 +60,14 @@ class Button(pygame.sprite.Sprite):
         self.rect.topleft = (x,y)
         self.sprite = pygame.sprite.RenderPlain(self)
         self.toggled = False
+        self.font = pygame.font.SysFont('comicsans',15)
+        self.text = text
+        self.text_rendered = self.font.render(self.text,1,textcolor)
+        self.value = value
     def draw(self,win):
         self.sprite.update()
         self.sprite.draw(win)
+        win.blit(self.text_rendered, (self.rect.x+3,self.rect.y+3))
         if self.toggled:
             pygame.draw.rect(win, (0,100,255), (self.rect.x,self.rect.y,self.base,self.base), 3)
         else:
@@ -95,9 +104,12 @@ for i in range(COLLUMS):
     gy = 0
     gx += RECTBASE
 
-buttons = [Button(10, ROWS * RECTBASE + 10,(255,0,0),"RED"),Button(50, ROWS * RECTBASE + 10,(255,255,0),"YELLOW"),Button(90, ROWS * RECTBASE + 10,(0,255,0),"GREEN"),Button(130, ROWS * RECTBASE + 10,(0,255,255),"BLUE1"),Button(10, ROWS * RECTBASE + 50,(0,0,255),"BLUE"),Button(50, ROWS * RECTBASE + 50,(255,0,255),"PURPLE"),Button(90, ROWS * RECTBASE + 50,(0,0,0),"BLACK")]
+buttons = [Button(10, ROWS * RECTBASE + 10,(255,0,0),"RED","r",(0,0,0)),Button(50, ROWS * RECTBASE + 10,(255,255,0),"YELLOW","y",(0,0,0)),Button(90, ROWS * RECTBASE + 10,(0,255,0),"GREEN","g",(0,0,0)),
+Button(130, ROWS * RECTBASE + 10,(0,255,255),"BLUE1","b",(0,0,0)),Button(10, ROWS * RECTBASE + 50,(0,0,255),"BLUE","B"),Button(50, ROWS * RECTBASE + 50,(255,0,255),"PURPLE","p"),
+Button(90, ROWS * RECTBASE + 50,(0,0,0),"BLACK","b")]
 
 togglecolor = (0,0,0)
+togglevalue = "b"
 while run:
     clock.tick(100)
     for event in pygame.event.get():
@@ -107,10 +119,11 @@ while run:
             mouse_x,mouse_y = pygame.mouse.get_pos()
             for g in grid:
                 if g.collision(mouse_x,mouse_y):
-                    g.toggle(togglecolor)
+                    g.toggle(togglecolor,togglevalue)
                     print(g.rect.topleft)
             for button in buttons:
                 if button.collision(mouse_x,mouse_y):
                     togglecolor = button.toggle(buttons)
+                    togglevalue = button.value
 
     redraw(grid,buttons)
