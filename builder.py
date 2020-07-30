@@ -11,8 +11,8 @@ except ValueError or IndexError:
     sys.exit()
 
 pygame.init()
-ROWS = int(sys.argv[2])
 COLLUMS = int(sys.argv[1])
+ROWS = int(sys.argv[2])
 RECTBASE = 30
 win = pygame.display.set_mode((COLLUMS*RECTBASE, ROWS*RECTBASE + 100))
 run = True
@@ -80,7 +80,20 @@ class Button(pygame.sprite.Sprite):
         for button in buttons:
             button.toggled = False
         self.toggled = True
-        return self.color        
+        return self.color
+
+class EndButton(Button):
+    def toggle(self, grid,collums):
+        num = 0
+        string = []
+        for gri in grid:
+            string.append(gri.value)
+            num += 1
+            if num >= collums:
+                num = 0
+                joined = "".join(string)
+                string = []
+                print(f'"{joined}",')
 
 
 # >>> REDRAW <<< #
@@ -91,22 +104,25 @@ def redraw(grid,buttons):
         pygame.draw.rect(win, (0,0,0), (g.rect.x,g.rect.y,RECTBASE,RECTBASE), 1)
     for button in buttons:
         button.draw(win)
+    endbutton.draw(win)
     pygame.display.update()
 
 #create grid and other classes
 gx = 0
 gy = 0
 grid = []
-for i in range(COLLUMS):
-    for j in range(ROWS):
+for i in range(ROWS):
+    for j in range(COLLUMS):
         grid.append(Grid(gx,gy))
-        gy += RECTBASE
-    gy = 0
-    gx += RECTBASE
+        gx += RECTBASE
+    gx = 0
+    gy += RECTBASE
 
-buttons = [Button(10, ROWS * RECTBASE + 10,(255,0,0),"RED","r",(0,0,0)),Button(50, ROWS * RECTBASE + 10,(255,255,0),"YELLOW","y",(0,0,0)),Button(90, ROWS * RECTBASE + 10,(0,255,0),"GREEN","g",(0,0,0)),
-Button(130, ROWS * RECTBASE + 10,(0,255,255),"BLUE1","b",(0,0,0)),Button(10, ROWS * RECTBASE + 50,(0,0,255),"BLUE","B"),Button(50, ROWS * RECTBASE + 50,(255,0,255),"PURPLE","p"),
-Button(90, ROWS * RECTBASE + 50,(0,0,0),"BLACK","b")]
+#add values for RED and YELLOW
+buttons = [Button(10, ROWS * RECTBASE + 10,(255,0,0),"RED","r",(0,0,0)),Button(50, ROWS * RECTBASE + 10,(255,255,0),"YELLOW","y",(0,0,0)),Button(90, ROWS * RECTBASE + 10,(0,255,0),"spawn","S",(0,0,0)),
+Button(130, ROWS * RECTBASE + 10,(0,255,255),"extra1","o",(0,0,0)),Button(10, ROWS * RECTBASE + 50,(0,0,255),"extra2","O"),Button(50, ROWS * RECTBASE + 50,(255,0,255),"end","E"),
+Button(90, ROWS * RECTBASE + 50,(0,0,0),"platf.","p")]
+endbutton = EndButton(130, ROWS * RECTBASE + 50,(50,50,50),"export",".")
 
 togglecolor = (0,0,0)
 togglevalue = "b"
@@ -120,10 +136,12 @@ while run:
             for g in grid:
                 if g.collision(mouse_x,mouse_y):
                     g.toggle(togglecolor,togglevalue)
-                    print(g.rect.topleft)
+                    print(g.value)
             for button in buttons:
                 if button.collision(mouse_x,mouse_y):
                     togglecolor = button.toggle(buttons)
                     togglevalue = button.value
+            if endbutton.collision(mouse_x,mouse_y):
+                endbutton.toggle(grid,COLLUMS)
 
     redraw(grid,buttons)
