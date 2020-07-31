@@ -40,4 +40,5 @@ End block | E
 normal platform | p
 
 The cutom and extra blocks are up to you to define :wink:
+###### PS: Dont blame me for using pygame
 
