@@ -33,7 +33,7 @@ class Grid(pygame.sprite.Sprite):
         self.rect.y = y
         self.toggled = False
         self.value = "."
-    def collision(self, mouse_x, mouse_y):
+    def press(self, mouse_x, mouse_y):
         if mouse_x > self.rect.x and mouse_x < self.rect.x+self.rect.width:
             if mouse_y < self.rect.y+self.rect.width and mouse_y > self.rect.y:
                 return True
@@ -72,7 +72,7 @@ class Button(pygame.sprite.Sprite):
             pygame.draw.rect(win, (0,100,255), (self.rect.x,self.rect.y,self.base,self.base), 3)
         else:
             pygame.draw.rect(win, (0,0,0), (self.rect.x,self.rect.y,self.base,self.base), 3)
-    def collision(self,mouse_x,mouse_y):
+    def press(self,mouse_x,mouse_y):
         if mouse_x > self.rect.x and mouse_x < self.rect.x+self.rect.width:
             if mouse_y < self.rect.y+self.rect.width and mouse_y > self.rect.y:
                 return True
@@ -83,8 +83,12 @@ class Button(pygame.sprite.Sprite):
         return self.color
 
 class EndButton(Button):
-    def toggle(self, grid,collums):
+    def toggle(self, grid,collums,rows):
+        print("""
+RESULT:
+<<--------------------->>""")
         num = 0
+        lines = 0
         string = []
         for gri in grid:
             string.append(gri.value)
@@ -93,8 +97,14 @@ class EndButton(Button):
                 num = 0
                 joined = "".join(string)
                 string = []
-                print(f'"{joined}",')
-
+                lines += 1
+                if lines == 1:
+                    print(f'["{joined}",')
+                elif lines >= rows:
+                    print(f'"{joined}"]')
+                else:
+                    print(f'"{joined}",')
+                
 
 # >>> REDRAW <<< #
 def redraw(grid,buttons):
@@ -119,7 +129,7 @@ for i in range(ROWS):
     gy += RECTBASE
 
 #add values for RED and YELLOW
-buttons = [Button(10, ROWS * RECTBASE + 10,(255,0,0),"RED","r",(0,0,0)),Button(50, ROWS * RECTBASE + 10,(255,255,0),"YELLOW","y",(0,0,0)),Button(90, ROWS * RECTBASE + 10,(0,255,0),"spawn","S",(0,0,0)),
+buttons = [Button(10, ROWS * RECTBASE + 10,(255,0,0),"spawn","S",(0,0,0)),Button(50, ROWS * RECTBASE + 10,(255,255,0),"block1","x",(0,0,0)),Button(90, ROWS * RECTBASE + 10,(0,255,0),"block2","X",(0,0,0)),
 Button(130, ROWS * RECTBASE + 10,(0,255,255),"extra1","o",(0,0,0)),Button(10, ROWS * RECTBASE + 50,(0,0,255),"extra2","O"),Button(50, ROWS * RECTBASE + 50,(255,0,255),"end","E"),
 Button(90, ROWS * RECTBASE + 50,(0,0,0),"platf.","p")]
 endbutton = EndButton(130, ROWS * RECTBASE + 50,(50,50,50),"export",".")
@@ -134,14 +144,13 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x,mouse_y = pygame.mouse.get_pos()
             for g in grid:
-                if g.collision(mouse_x,mouse_y):
+                if g.press(mouse_x,mouse_y):
                     g.toggle(togglecolor,togglevalue)
-                    print(g.value)
             for button in buttons:
-                if button.collision(mouse_x,mouse_y):
+                if button.press(mouse_x,mouse_y):
                     togglecolor = button.toggle(buttons)
                     togglevalue = button.value
-            if endbutton.collision(mouse_x,mouse_y):
-                endbutton.toggle(grid,COLLUMS)
+            if endbutton.press(mouse_x,mouse_y):
+                endbutton.toggle(grid,COLLUMS,ROWS)
 
     redraw(grid,buttons)
