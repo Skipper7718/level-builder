@@ -16,8 +16,11 @@ ROWS = int(sys.argv[2])
 RECTBASE = 30
 win = pygame.display.set_mode((COLLUMS*RECTBASE, ROWS*RECTBASE + 100))
 run = True
-icon = pygame.image.load("icon.png")
-pygame.display.set_icon(icon)
+try:
+    icon = pygame.image.load("icon.png")
+    pygame.display.set_icon(icon)
+except:
+    pass
 pygame.display.set_caption("Level builder")
 clock = pygame.time.Clock()
 
