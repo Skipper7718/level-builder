@@ -28,7 +28,7 @@ level1 = ["....................",
 
 In my opinion the controls of the program are intuitive. When you click on export, the program will generate a multi dimensional array that will be displayed in the terminal ready to be copied :wink:
 
-###The only thing you have to do is to implement those to your code. For clarification the characters are:
+### The only thing you have to do is to implement those to your code. For clarification the characters are:
 Block type | Character
 ---------- | ---------
 Spawn block | S
